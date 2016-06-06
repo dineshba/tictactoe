@@ -28,24 +28,24 @@ public class boardTest {
     }
 
     @Test
-    public void shouldReturnTrueIfPositionIsValid() throws PlayerAlreadyOccupied {
+    public void shouldReturnTrueIfPositionIsValid() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         assertTrue(board.move(player, x_position, y_position));
     }
 
     @Test
-    public void shouldReturnFalseIfPositionIsInValid() throws PlayerAlreadyOccupied {
+    public void shouldReturnFalseIfPositionIsInValid() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         y_position = 4;
         assertFalse(board.move(player, x_position, y_position));
     }
 
     @Test
-    public void shouldReturnFalseIfPositionIsNegative() throws PlayerAlreadyOccupied {
+    public void shouldReturnFalseIfPositionIsNegative() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         x_position = -1;
         assertFalse(board.move(player, x_position, y_position));
     }
 
     @Test
-    public void shouldReturnPlayerIfPlayerIsOccupied() throws PlayerAlreadyOccupied {
+    public void shouldReturnPlayerIfPlayerIsOccupied() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         board.move(player, x_position, y_position);
         assertEquals(board.playerAt(x_position, y_position), player);
     }
@@ -61,11 +61,30 @@ public class boardTest {
         board.playerAt(x_position, y_position);
     }
 
+    @Test(expected = PlayerAlreadyOccupied.class)
+    public void shouldNotAllowToInsertIfAlreadyOccupied() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
+        board.move(player, x_position, y_position);
+        board.move(player, x_position, y_position);
+    }
+
     @Test
-    public void shouldNotAllowToInsertIfAlreadyOccupied() throws PlayerAlreadyOccupied {
+    public void shouldNotAllowToInsertIfAlreadyOccupiedMessageVerification() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         thrown.expectMessage("Player is already occupied");
         board.move(player, x_position, y_position);
+        board.move(player + 1, x_position, y_position);
+    }
+
+    @Test(expected = PlayerAlreadyPlayed.class)
+    public void shouldNotAllowConsecutiveMoveBySamePlayer() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         board.move(player, x_position, y_position);
+        board.move(player, x_position + 1, y_position);
+    }
+
+    @Test
+    public void shouldNotAllowConsecutiveMoveBySamePlayerMessageVerification() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
+        thrown.expectMessage("Player has already played");
+        board.move(player, x_position, y_position);
+        board.move(player, x_position + 1, y_position);
     }
 
 }
