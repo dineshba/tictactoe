@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class boardTest {
 
-    private int player;
+    private Players player;
     private int x_position;
     private int y_position;
     private Board board;
@@ -23,7 +23,7 @@ public class boardTest {
     public void setUp() {
         x_position = 0;
         y_position = 0;
-        player = 1;
+        player = Players.PLAYER;
         board = new Board();
     }
 
@@ -52,7 +52,7 @@ public class boardTest {
 
     @Test
     public void shouldReturnZeroIfPlayerIsNotOccupied() {
-        assertEquals(0, board.playerAt(x_position, y_position));
+        assertEquals(Players.NOBODY, board.playerAt(x_position, y_position));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -71,7 +71,7 @@ public class boardTest {
     public void shouldNotAllowToInsertIfAlreadyOccupiedMessageVerification() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         thrown.expectMessage("Player is already occupied");
         board.move(player, x_position, y_position);
-        board.move(player + 1, x_position, y_position);
+        board.move(Players.COMPUTER, x_position, y_position);
     }
 
     @Test(expected = PlayerAlreadyPlayed.class)
