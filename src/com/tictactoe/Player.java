@@ -1,7 +1,7 @@
 package com.tictactoe;
 
-public enum Players {
-    PLAYER,
+public enum Player {
+    HUMAN,
     NOBODY,
     COMPUTER
 }

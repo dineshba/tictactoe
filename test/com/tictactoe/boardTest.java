@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 public class boardTest {
 
-    private Players player;
+    private Player player;
     private int x_position;
     private int y_position;
     private Board board;
@@ -23,7 +23,7 @@ public class boardTest {
     public void setUp() {
         x_position = 0;
         y_position = 0;
-        player = Players.PLAYER;
+        player = Player.HUMAN;
         board = new Board();
     }
 
@@ -52,7 +52,7 @@ public class boardTest {
 
     @Test
     public void shouldReturnZeroIfPlayerIsNotOccupied() {
-        assertEquals(Players.NOBODY, board.playerAt(x_position, y_position));
+        assertEquals(Player.NOBODY, board.playerAt(x_position, y_position));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -71,7 +71,7 @@ public class boardTest {
     public void shouldNotAllowToInsertIfAlreadyOccupiedMessageVerification() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed {
         thrown.expectMessage("Player is already occupied");
         board.move(player, x_position, y_position);
-        board.move(Players.COMPUTER, x_position, y_position);
+        board.move(Player.COMPUTER, x_position, y_position);
     }
 
     @Test(expected = PlayerAlreadyPlayed.class)
@@ -85,6 +85,57 @@ public class boardTest {
         thrown.expectMessage("Player has already played");
         board.move(player, x_position, y_position);
         board.move(player, x_position + 1, y_position);
+    }
+
+    @Test
+    public void shouldReturnPlayerWhenThereIsARowOfSamePlayer() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed, IncompleteBoard {
+        board.move(player, x_position, y_position);
+        board.move(Player.COMPUTER, x_position + 1, y_position + 1);
+        board.move(player, x_position + 1, y_position);
+        board.move(Player.COMPUTER, x_position + 2, y_position + 2);
+        board.move(player, x_position + 2, y_position);
+        assertEquals(player, board.whoWon());
+    }
+
+    @Test
+    public void shouldReturnPlayerWhenThereIsAColumnOfSamePlayer() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed, IncompleteBoard {
+        board.move(Player.COMPUTER, x_position, y_position);
+        board.move(player, x_position + 1, y_position + 1);
+        board.move(Player.COMPUTER, x_position, y_position + 1);
+        board.move(player, x_position + 2, y_position + 2);
+        board.move(Player.COMPUTER, x_position, y_position + 2);
+        assertEquals(Player.COMPUTER, board.whoWon());
+    }
+
+    @Test
+    public void shouldReturnPlayerWhenThereIsADiagonalOfSamePlayer() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed, IncompleteBoard {
+        board.move(Player.COMPUTER, x_position, y_position);
+        board.move(player, x_position + 1, y_position);
+        board.move(Player.COMPUTER, x_position + 1, y_position + 1);
+        board.move(player, x_position + 2, y_position);
+        board.move(Player.COMPUTER, x_position + 2, y_position + 2);
+        assertEquals(Player.COMPUTER, board.whoWon());
+    }
+
+    @Test
+    public void shouldReturnNobodyWhenThereIsNoSamePlayer() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed, IncompleteBoard {
+        board.move(Player.COMPUTER, x_position, y_position);
+        board.move(player, x_position + 1, y_position + 1);
+        board.move(Player.COMPUTER, x_position, y_position + 1);
+        board.move(player, x_position + 1, y_position + 2);
+        board.move(Player.COMPUTER, x_position + 2, y_position);
+        board.move(player, x_position , y_position + 2);
+        board.move(Player.COMPUTER, x_position + 2, y_position + 2);
+        board.move(player, x_position + 2, y_position + 1);
+        board.move(Player.COMPUTER, x_position + 1, y_position);
+
+        assertEquals(Player.COMPUTER, board.whoWon());
+    }
+
+    @Test
+    public void shouldThrowErrorWhenBoardIsIncomplete() throws PlayerAlreadyOccupied, PlayerAlreadyPlayed, IncompleteBoard {
+        board.move(Player.COMPUTER, x_position, y_position);
+        board.whoWon();
     }
 
 }
